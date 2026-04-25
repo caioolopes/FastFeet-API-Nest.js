@@ -1,0 +1,11 @@
+
+services:
+  postgres:
+    container_name: nest-clean-pg
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - ./data/pg:/var/lib/postgresql/data
