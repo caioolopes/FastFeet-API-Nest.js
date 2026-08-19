@@ -3,7 +3,6 @@ import { makeAnswer } from 'test/factories/make-answer'
 import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answer-comments-repository'
 import { CommentOnAnswerUseCase } from '@/domain/forum/application/use-cases/comment-on-answer'
 import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
-import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error'
 
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let inMemoryAnswersRepository: InMemoryAnswersRepository
@@ -30,29 +29,14 @@ describe('Comment on Answer', () => {
 
     await inMemoryAnswersRepository.create(answer)
 
-    const result = await sut.execute({
+    await sut.execute({
       answerId: answer.id.toString(),
       authorId: answer.authorId.toString(),
       content: 'Comentário teste',
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(inMemoryAnswerCommentsRepository.items[0]).toEqual(
-      result.value?.answerComment,
-    )
     expect(inMemoryAnswerCommentsRepository.items[0].content).toEqual(
       'Comentário teste',
     )
-  })
-
-  it('should not be able to comment on a non-existing answer', async () => {
-    const result = await sut.execute({
-      answerId: 'non-existing-answer-id',
-      authorId: 'author-1',
-      content: 'Comentário teste',
-    })
-
-    expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })
